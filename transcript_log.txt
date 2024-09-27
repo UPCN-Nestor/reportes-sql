@@ -823,3 +823,528 @@ FROM [UPCN_COM_PROD].dbo.CONTRATO CO
 WHERE CO.SucCod = 1 and CO.SrvCod = 5 and Sum2Sts < 4
 	AND F.FactNro IS NOT NULL
 2024-09-27 13:04:25 - Vista exportada: dbo.TelecomunicacionesNAP
+2024-09-27 13:04:29 - NÃºmero de funciones encontradas: 0
+
+2024-09-27 13:04:29 - Cambios preparados para Git.
+[main 2e3386b] ActualizaciÃ³n de vistas y funciones - 2024-09-27 13:04:29
+ 14 files changed, 662 insertions(+), 44 deletions(-)
+ create mode 100644 SQL_Exports/Vistas/dbo_ConsumosEnCero.sql
+ create mode 100644 SQL_Exports/Vistas/dbo_Geo.sql
+ create mode 100644 SQL_Exports/Vistas/dbo_ReporteCobranza.sql
+ create mode 100644 SQL_Exports/Vistas/dbo_ReporteCuotaCapital.sql
+ create mode 100644 SQL_Exports/Vistas/dbo_ReporteDeuda.sql
+ create mode 100644 SQL_Exports/Vistas/dbo_ReporteFacturacion-bak.sql
+ create mode 100644 SQL_Exports/Vistas/dbo_ReporteFacturacionDetallado.sql
+ create mode 100644 SQL_Exports/Vistas/dbo_ReporteFacturacionResumido.sql
+ create mode 100644 SQL_Exports/Vistas/dbo_ReporteOrdenesDePago.sql
+ create mode 100644 SQL_Exports/Vistas/dbo_ReportePrepago.sql
+ create mode 100644 SQL_Exports/Vistas/dbo_ReporteSueldos.sql
+ create mode 100644 SQL_Exports/Vistas/dbo_TelecomunicacionesNAP.sql
+2024-09-27 13:04:29 - Commit realizado con el mensaje: 'ActualizaciÃ³n de vistas y funciones - 2024-09-27 13:04:29'
+Enumerating objects: 21, done.
+Counting objects: 100% (21/21), done.
+Delta compression using up to 28 threads
+Compressing objects: 100% (17/17), done.
+Writing objects: 100% (18/18), 20.54 KiB | 2.93 MiB/s, done.
+Total 18 (delta 2), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (2/2), completed with 1 local object.
+To https://github.com/UPCN-Nestor/reportes-sql.git
+   3cf0596..2e3386b  main -> main
+2024-09-27 13:04:31 - Cambios subidos al repositorio remoto.
+2024-09-27 13:04:31 - Proceso de exportaciÃ³n y Git finalizado.
+La transcripción se ha detenido. El archivo de salida es C:\Repos\reportes-sql\transcript_log.txt
+PS C:\Repos\reportes-sql> .\backup-scripts-vistas.ps1
+La transcripción ha comenzado. El archivo de salida es C:\Repos\reportes-sql\transcript_log.txt
+2024-09-27 13:06:34 - Iniciando proceso de exportaciÃ³n...
+2024-09-27 13:06:34 - Conectado al servidor SQL 192.168.0.230 y a la base de datos UPCN_REPORTES correctamente.
+2024-09-27 13:06:35 - NÃºmero de vistas encontradas: 12
+/****** Object:  View [dbo].[ConsumosEnCero]    Script Date: 27/09/2024 13:06:35 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+CREATE VIEW ConsumosEnCero AS
+SELECT XX.*,
+    C2.CnsKwAct UltLectura
+FROM (SELECT Socio,
+             Suministro,
+             STRING_AGG(Medidor, ', ')                                                          Medidores,
+             SUM(Consumo)                                                                       Consumo,
+             CTA.SumNomPos                                                                      Nombre,
+             CONCAT(TRIM(INM.InmCllDsc), ' ', INM.InmAlt , ' ', INM.InmPis, ' ', REPLACE(INM.InmDto, '"','')) Domicilio,
+             MAX(FechaUltimaToma) FechaUltimaToma,
+			 INM.InmLatitud Lat,
+			 INM.InmLongitud Lon,
+			 Area
+      FROM (SELECT C.CliCod                             Socio,
+                   C.SumNro                             Suministro,
+                   CONCAT(CO.CnsTpoMdd, '-', CO.CnsMdd) Medidor,
+                   SUM(CO.CnsKwCns)                     Consumo,
+                   MAX(CnsFec)                          FechaUltimaToma,
+				   C.Sum2Are Area				  
+            FROM [UPCN_COM_PROD].dbo.CONSUM CO
+                     JOIN [UPCN_COM_PROD].dbo.CONTRATO C
+                          ON (CO.CnsSuc = C.SucCod AND CO.CliCod = C.CliCod AND CO.SumNro = C.SumNro AND
+                              CO.CnsSrv = C.SrvCod)
+            WHERE CO.CnsSuc = 1
+              AND C.Sum2Sts IN (1, 2)
+              AND C.CliCod <> 1100
+              AND CO.CnsSrv = 1
+              AND CO.CnsFec > '01/01/2024'
+            GROUP BY C.CliCod, C.SumNro, CO.CnsTpoMdd, CO.CnsMdd, C.Sum2Are
+            ) X
+               JOIN [UPCN_COM_PROD].dbo.CUENTA CTA ON (X.Socio = CTA.CliCod AND X.Suministro = CTA.SumNro AND CTA.SucCod = 1)
+               JOIN [UPCN_COM_PROD].dbo.INMUEBLE INM ON (CTA.SucCod = INM.SucCod AND CTA.InmCod = INM.InmCod)
+      GROUP BY Socio, Suministro, CTA.SumNomPos, INM.InmCllDsc, INM.InmAlt, INM.InmPis, INM.InmDto, INM.InmLatitud, INM.InmLongitud, Area
+      HAVING SUM(Consumo) < 20
+    ) XX
+    JOIN [UPCN_COM_PROD].dbo.CONSUM C2 ON (C2.CnsSuc = 1 AND C2.CnsSrv = 1 AND XX.Socio = C2.CliCod AND XX.Suministro = C2.SumNro AND XX.FechaUltimaToma = C2.CnsFec)
+2024-09-27 13:06:35 - Vista exportada: dbo.ConsumosEnCero
+/****** Object:  View [dbo].[Geo]    Script Date: 27/09/2024 13:06:35 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+
+
+
+CREATE VIEW Geo AS
+select c.CliCod Socio, c.SumNro Suministro, CONCAT(c.CliCod, '-', c.SumNro) "Soc-Sumi",
+	i.InmLatitud Latitud, i.InmLongitud Longitud
+from [UPCN_COM_PROD].dbo.[CUENTA] c
+	join [UPCN_COM_PROD].dbo.[INMUEBLE] i
+		on (c.SucCod = i.SucCod and c.InmCod = i.InmCod)
+2024-09-27 13:06:35 - Vista exportada: dbo.Geo
+/****** Object:  View [dbo].[ReporteCobranza]    Script Date: 27/09/2024 13:06:35 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+
+
+
+
+
+
+/* COBRANZAS (Recaudacion Mensual) */
+
+/* DROP VIEW ReporteCobranza */
+CREATE VIEW [dbo].[ReporteCobranza] AS
+SELECT CAST('01/' + RIGHT('00' + CAST(MONTH(P2.Pa1Fec) AS VARCHAR), 2) + '/' + CAST(YEAR(P2.Pa1Fec) AS VARCHAR) AS DATE) AS Periodo,
+       CASE WHEN (P6.Pa6Ent = '9999') THEN 'cj. CHEQUE' 
+		        WHEN (P6.Pa6Ent = 'EFEC') THEN 'cj. EFECTIVO' 
+				WHEN (P6.Pa6Ent = '1036') THEN 'cj. DEBITO'
+				WHEN (P6.Pa6Ent = '9001' OR P6.Pa6Ent = '9002' OR P6.Pa6Ent = '9852' OR P6.Pa6Ent = '9854') THEN 'z. TRANSFERENCIA'
+				WHEN (P6.Pa6Ent = '9600' OR P6.Pa6Ent = '9650' OR P6.Pa6Ent = 'EPAN') THEN 'PREPAGO'
+				WHEN (P6.Pa6Ent = '9750' OR P6.Pa6Ent = '9760' OR P6.Pa6Ent = '9761') THEN 'OFICINA VIRTUAL'
+				WHEN (P6.Pa6Ent = '1040') THEN 'MUNICIPALIDAD'
+				WHEN (P6.Pa6Ent = '9060') THEN 'COMPENSACIÓN'
+				WHEN (P6.Pa6Ent = '9100') THEN 'PAGO FACIL'
+				WHEN (P6.Pa6Ent = '9400') THEN 'RED LINK'
+				WHEN (P6.Pa6Ent = '9300') THEN 'BAPRO'
+				WHEN (P6.Pa6Ent = '9450') THEN 'BANELCO'
+				WHEN (P6.Pa6Ent = '9200') THEN 'RIPSA'
+				WHEN (P6.Pa6Ent = '9800') THEN 'COBROEXPRESS'
+				WHEN (P6.Pa6Ent = '9900') THEN 'RAPIPAGO'
+				WHEN (P6.Pa6Ent = '9001') THEN 'BCO. PCIA.'
+				WHEN (P6.Pa6Ent = '9500') THEN 'BCO. MACRO'
+				WHEN (P6.Pa6Ent = '9007') THEN 'BCO. RÍO'
+				WHEN (P6.Pa6Ent = '9853') THEN 'BCO. RÍO TRANSF.'
+				WHEN (P6.Pa6Ent = '9851') THEN 'BCO. PCIA. TRANSF.'
+				WHEN (P6.Pa6Ent = '9700') THEN 'PRONTO PAGO'
+				WHEN (P6.Pa6Ent = '9950') THEN 'COOP. CRÉDITO'
+				WHEN (P6.Pa6Ent = '9000') THEN 'BCO. NACIÓN'
+				ELSE 'OTROS'
+		   END AS Ente,
+		   CASE WHEN (P6.Pa6Ent = '9999') OR (P6.Pa6Ent = 'EFEC') OR (P6.Pa6Ent = '1036') THEN 'CAJAS'
+				WHEN (P6.Pa6Ent = '9001' OR P6.Pa6Ent = '9002' OR P6.Pa6Ent = '9852' OR P6.Pa6Ent = '9854')  THEN 'z. TRANSFERENCIA'
+				WHEN (P6.Pa6Ent = '9600' OR P6.Pa6Ent = '9650' OR P6.Pa6Ent = 'EPAN') THEN 'PREPAGO'
+				WHEN (P6.Pa6Ent = '9750' OR P6.Pa6Ent = '9760' OR P6.Pa6Ent = '9761') THEN 'WEB'
+				WHEN (P6.Pa6Ent = '1040') THEN 'MUNICIPALIDAD'
+				WHEN (P6.Pa6Ent = '9060') THEN 'COMPENSACIÓN'
+				WHEN (P6.Pa6Ent = '9400') OR (P6.Pa6Ent = '9450') THEN 'BANCA ELECTRÓNICA'
+				WHEN (P6.Pa6Ent = '9300') OR (P6.Pa6Ent = '9200') OR (P6.Pa6Ent = '9800') OR (P6.Pa6Ent = '9900') OR (P6.Pa6Ent = '9100') OR (P6.Pa6Ent = '9001' OR P6.Pa6Ent = '9500' OR P6.Pa6Ent = '9007' OR P6.Pa6Ent = '9853' OR P6.Pa6Ent = '9851' 
+						OR P6.Pa6Ent = '9700' OR P6.Pa6Ent = '9950' OR P6.Pa6Ent = '9000' 
+				) THEN 'BANCO'
+				ELSE 'OTROS' 
+		   END AS Grupo,
+		   P6.Pa6Ent AS "Código Ente",
+		   P6.Pa6Imp AS Importe,
+		   P2.Pa1Fec AS Fecha,
+		   P2.Pa1Cjr AS Cajero,
+		   P2.Pa2Rec AS Recibo,
+		   P6.Pa6Cta AS Cuenta
+FROM UPCN_COM_PROD.dbo.PAGAD2 P2 JOIN UPCN_COM_PROD.dbo.PAGAD6 P6 ON (P2.SucCod = P6.SucCod AND P2.Pa1Fec = P6.Pa1Fec AND P2.Pa1Cjr = P6.Pa1Cjr AND P2.Pa2Rec = P6.Pa2Rec)
+WHERE P2.SucCod = 1 AND P2.Pa1Fec > '01/01/2019'
+2024-09-27 13:06:35 - Vista exportada: dbo.ReporteCobranza
+/****** Object:  View [dbo].[ReporteCuotaCapital]    Script Date: 27/09/2024 13:06:35 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+
+/* drop VIEW ReporteCuotaCapital */
+CREATE VIEW ReporteCuotaCapital AS
+select YEAR(Fecha) Año, MONTH(Fecha) Mes, Caso,
+	SUM(SaldoCC) SaldoCC, SUM(SaldoE) SaldoE,
+	SUM(ImporteCC) ImporteCC, SUM(ImporteE) ImporteE,
+	COUNT(*) Cantidad
+from
+(
+	select FC.FactFec Fecha, CS.CompSdo SaldoCC, CS2.CompSdo SaldoE,
+		CASE WHEN CS.CompSdo IS NULL and CS2.CompSdo IS NULL THEN 'Ambas Pagas'
+			WHEN CS.CompSdo IS NOT NULL and CS2.CompSdo IS NULL THEN 'CC Impaga'
+			WHEN CS.CompSdo IS NULL and CS2.CompSdo IS NOT NULL THEN 'Energía Impaga'
+			WHEN CS.CompSdo IS NOT NULL and CS2.CompSdo IS NOT NULL THEN 'Ambas Impagas'
+		END Caso,
+		FE.Fac7NoEImp ImporteCC, FE.Fac7EneImp ImporteE
+	from UPCN_COM_PROD.dbo.FACTUC FC
+		join UPCN_COM_PROD.dbo.FACTUE FE ON (FC.SucCod = FE.SucCod and FC.CliCod = FE.CliCod and FC.SumNro = FE.SumNro 
+			and FC.FrmCod = FE.FrmCod and FC.FactLet = FE.FactLet and FC.FactPtoV = FE.FactPtoV and FC.FactNro = FE.FactNro)
+		left join UPCN_COM_PROD.dbo.COMSAL CS on (FC.SucCod = CS.SucCod and FC.CliCod = CS.CliCod and FC.SumNro = CS.SumNro
+			and FC.FrmCod = CS.CompTpo and FC.FactLet = CS.CompLet and FC.FactPtoV = CS.CompPtoV and FC.FactNro = CS.CompNro)
+		left join UPCN_COM_PROD.dbo.COMSAL CS2 ON (FE.SucCod = CS2.SucCod and FE.CliCod = CS2.CliCod and FE.SumNro = CS2.SumNro
+			and FE.Fac7EneFrm = CS2.CompTpo and FE.Fac7EneLet = CS2.CompLet and FE.Fac7EnePto = CS2.CompPtoV and FE.Fac7EneNro = CS2.CompNro)		
+	where FC.SucCod = 1 and FC.FactPtoV = 14
+		and FC.FactFec > '01/01/2022'
+		and FC.FactVto1 < GETDATE()
+		and FC.FactFec IS NOT NULL
+) x
+group by YEAR(Fecha), MONTH(Fecha), Caso
+2024-09-27 13:06:35 - Vista exportada: dbo.ReporteCuotaCapital
+/****** Object:  View [dbo].[ReporteDeuda]    Script Date: 27/09/2024 13:06:35 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+
+
+
+
+/* drop view [dbo].[ReporteDeuda] */
+create view [dbo].[ReporteDeuda] as
+
+SELECT CS.CliCod as Socio,
+	CS.SumNro as Suministro,
+	CONCAT(CS.CliCod, '-',CS.SumNro) as "Soc-Sumi",
+	P.CliApe as Nombre,
+	FS.Fac1EttCod as Tarifa,
+	FS.Fac1Srv as ServicioPrincipal,
+	FS.Fac1Are as Area,
+	CompTpo as TipoComprobante,
+	CONCAT(CompTpo, '-', CompLet, '-', CompPtoV, '-', CompNro) as Comprobante,
+	CompFec as Emision,
+	CompVto1 as Vencimiento,
+	YEAR(CompVto1) AS VencimientoAño,
+	CONCAT(YEAR(CompVto1), '-', MONTH(CompVto1)) AS VencimientoAñoMes,
+	CASE WHEN CompVto1 > GETDATE() THEN 'N' ELSE 'S' END Vencida,
+	CASE WHEN CompTpo IN (1,3) THEN CompImp WHEN CompTpo IN (50,60) THEN CompImp * -1 END AS Saldo,
+	CO.Sum2Sts Estado,
+	CASE WHEN CO.Sum2Sts = 4 THEN 'Desconectado' ELSE 'Conectado' END EstadoCD,
+	Sum2FecSts FechaEstado,
+	CASE WHEN CompEnerSN = 'N' THEN 'No energético' ELSE 'Energético' END Energetico
+FROM [UPCN_COM_PROD].dbo.COMSAL CS
+	OUTER APPLY (SELECT TOP(1) CliApe FROM [UPCN_COM_PROD].dbo.PERSONA P WHERE CS.SucCod = P.SucCod and CS.CliCod = P.CliCod) P
+	OUTER APPLY (SELECT TOP(1) * FROM [UPCN_COM_PROD].dbo.CONTRATO CO WHERE CS.SucCod = CO.SucCod AND CS.CliCod = CO.CliCod AND CS.SumNro = CO.SumNro 
+		ORDER BY CO.SrvCod) CO
+	OUTER APPLY (SELECT TOP(1) FS.Fac1EttCod, FS.Fac1Srv, FS.Fac1Are 
+		FROM [UPCN_COM_PROD].dbo.FACTUS FS 
+		WHERE CS.SucCod = FS.SucCod  AND CS.CliCod = FS.CliCod AND CS.SumNro = FS.SumNro AND CS.CompFec = FS.FactFec AND CS.CompTpo = FS.FrmCod 
+			AND CS.CompLet = FS.FactLet AND CS.CompPtoV = FS.FactPtoV AND CS.CompNro = FS.FactNro 
+		ORDER BY FS.Fac1Srv
+	) FS
+WHERE CS.SucCod = 1 AND CS.CliCod <> 1100  
+	AND CS.CompPtoV IN (0,12,13,14) -- Hay deuda rara en pto.vta. 8
+	AND CS.CompVto1 > '01/01/2022'
+2024-09-27 13:06:35 - Vista exportada: dbo.ReporteDeuda
+/****** Object:  View [dbo].[ReporteFacturacion-bak]    Script Date: 27/09/2024 13:06:35 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+
+
+
+
+/* drop view ReporteFacturacion */
+CREATE VIEW [dbo].[ReporteFacturacion-bak] AS
+SELECT 
+	FC.CliCod as Socio,
+	FC.SumNro as Suministro,
+	FC.FrmCod as TipoComprobante,
+	CONCAT(FC.FrmCod, '-', FC.FactLet, '-', FC.FactPtoV, '-', FC.FactNro) as Comprobante,
+	FC.FactFec Emision,
+	CASE WHEN FC.FactVto1 = '01/01/1753' THEN '01/01/2000' ELSE FC.FactVto1 END Vencimiento,
+	/*
+	RR.FactFecCnc Cancelacion,
+	CASE WHEN RR.FactFecCnc <> '01/01/1753' THEN 'S' ELSE 'N' END Cancelado,
+	CASE WHEN DATEDIFF(MONTH, FC.FactVto1, RR.FactFecCnc) > 0 THEN DATEDIFF(MONTH, FC.FactVto1, RR.FactFecCnc) ELSE 0 END DemoraPago,
+	CASE WHEN DATEDIFF(DAY, FC.FactVto1, RR.FactFecCnc) <= 0 THEN '1. AL DIA'
+		WHEN DATEDIFF(DAY, FC.FactVto1, RR.FactFecCnc) < 15 THEN '2. HASTA 15 DIAS'
+		WHEN DATEDIFF(DAY, FC.FactVto1, RR.FactFecCnc) < 30 THEN '3. HASTA 30 DIAS'
+		WHEN DATEDIFF(DAY, FC.FactVto1, RR.FactFecCnc) < 60 THEN '4. HASTA 60 DIAS'
+		WHEN DATEDIFF(DAY, FC.FactVto1, RR.FactFecCnc) >= 60 THEN '5. MAS DE 60 DIAS'
+	END AS Grupos,
+	*/
+	SUBSTRING(CONVERT(VARCHAR(10), FC.FactVto1, 103),4,2) AS MesVto,
+	SUBSTRING(CONVERT(VARCHAR(10), FC.FactVto1, 103),7,4) AS AñoVto,
+	CASE WHEN FC.FrmCod IN (1,3) THEN RC.ResuImp ELSE -RC.ResuImp END AS ImporteFactura,
+	--CASE WHEN FC.FrmCod IN (1,3) THEN RR.FactImpCnc ELSE -RR.FactImpCnc END AS ImporteCancelado
+	FS.Fac1Are Area,
+	FS.Fac1Ctg Categoria,
+	FS.Fac1EttCod ETTCod
+FROM [UPCN_COM_PROD].dbo.FACTUC FC
+	OUTER APPLY (SELECT TOP(1) * FROM [UPCN_COM_PROD].dbo.RESUMC RC WHERE FC.SucCod = RC.SucCod 
+						AND FC.CliCod = RC.CliCod AND FC.SumNro = RC.SumNro 
+						AND FC.FactFec = RC.ResuFec AND FC.FrmCod = RC.ResuTpo AND FC.FactLet = RC.ResuLet AND FC.FactPtoV = RC.ResuPtoV AND FC.FactNro = RC.ResuNro
+	) RC
+	OUTER APPLY (SELECT TOP(1) * FROM [UPCN_COM_PROD].dbo.FACTUS FS WHERE FC.SucCod = FS.SucCod AND FC.CliCod = FS.CliCod AND FC.SumNro = FS.SumNro AND
+		FC.FrmCod = FS.FrmCod and FC.FactLet = FS.FactLet and FC.FactPtoV = FS.FactPtoV and FC.FactNro = FS.FactNro 
+		ORDER BY FS.Fac1Srv
+	) FS
+
+/*
+	OUTER APPLY (SELECT FactFecCnc, FactImpCnc FROM UPCN_COM_PROD.dbo.FactMR RR WHERE FC.SucCod = RR.SucCod 
+						AND FC.CliCod = RR.CliCod AND FC.SumNro = RR.SumNro 
+						AND FC.FactFec = RR.FactFec AND FC.FrmCod = RR.FrmCod AND FC.FactLet = RR.FactLet AND FC.FactPtoV = RR.FactPtoV AND FC.FactNro = RR.FactNro
+				) RR		
+				*/
+WHERE FC.SucCod = 1 AND FC.FrmCod IN (1,3,50) AND YEAR(FC.FactFec) >= YEAR(GETDATE())-1 /*AND FC.CliCod <> 1100*/ AND FC.FactPtoV in (0,12,13,14) /*and FC.Factquin <> 9 and FC.FactAnu <> 1*/ 
+	and FC.FactNro > 0
+2024-09-27 13:06:35 - Vista exportada: dbo.ReporteFacturacion-bak
+/****** Object:  View [dbo].[ReporteFacturacionDetallado]    Script Date: 27/09/2024 13:06:35 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+
+
+
+/* drop view ReporteFacturacionDetallado*/
+create view [dbo].[ReporteFacturacionDetallado] AS
+SELECT Socio, Suministro, Comprobante, FechaEmision, FechaVencimiento, Servicio, Area, Categoria, Tarifa, Subtotal, Energetico,
+	SUM(Importe) Importe, SUM(Saldo) Saldo
+FROM
+(
+	SELECT 
+		FC.CliCod Socio,
+		FC.SumNro Suministro,
+		CONCAT(FC.FrmCod, '-', FC.FactLet, '-', FC.FactPtoV, '-', FC.FactNro) Comprobante,
+		FC.FactFec AS FechaEmision,		
+		FC.FactVto1 AS FechaVencimiento,
+		CASE WHEN FC.FactVto1 > GETDATE() THEN 'N' ELSE 'S' END Vencida,
+		FS.Fac1Srv Servicio,
+		FS.Fac1Are Area,
+		FS.Fac1Ctg Categoria,
+		FS.Fac1EttCod Tarifa,
+		CASE WHEN FC.FrmCod = 50 THEN -FI.Fac2Imp1 ELSE FI.Fac2Imp1 END Importe,
+		CASE WHEN FC.FrmCod = 50 THEN -FI.Fac2Sdo ELSE FI.Fac2Sdo END Saldo,
+		CASE WHEN FI.CliCod = 1100 THEN 'Municipalidad' 
+			WHEN FI.Fac2Cnp BETWEEN 0 and 38 AND FI.Fac2Itm NOT BETWEEN 2007 and 2010 THEN 'Energía'
+			WHEN FI.Fac2Itm BETWEEN 2007 and 2010 THEN 'ICT'
+			WHEN FI.Fac2Cnp in (200, 901) THEN 'Cuota Capital'
+			WHEN FI.Fac2Cnp BETWEEN 700 and 750 THEN 'Impuestos'
+			WHEN FI.Fac1Srv = 10 AND (FI.Fac2Cnp BETWEEN 100 and 110 OR FI.Fac2Cnp BETWEEN 346 AND 351 OR FI.Fac2Cnp BETWEEN 390 AND 602
+				OR FI.Fac2Cnp = 960) THEN 'Servicios Sociales'
+			WHEN FI.Fac1Srv = 5 AND (FI.Fac2Cnp BETWEEN 620 and 646 OR FI.Fac2Cnp BETWEEN 661 and 675) THEN 'Telecomunicaciones'
+			WHEN FI.Fac2Itm = 8550 THEN 'Suscrip. Acciones'
+			ELSE 'Otros' END Subtotal,
+		CASE WHEN FC.FactEnerSN = 'N' THEN 'No energético' ELSE 'Energético' END AS Energetico
+	FROM [UPCN_COM_PROD].dbo.FACTUC FC
+		OUTER APPLY (SELECT TOP(1) * FROM [UPCN_COM_PROD].dbo.FACTUS FS WHERE FC.SucCod = FS.SucCod AND FC.CliCod = FS.CliCod AND FC.SumNro = FS.SumNro AND
+			FC.FrmCod = FS.FrmCod and FC.FactLet = FS.FactLet and FC.FactPtoV = FS.FactPtoV and FC.FactNro = FS.FactNro 
+			ORDER BY FS.Fac1Srv
+		) FS
+		JOIN [UPCN_COM_PROD].dbo.FACTUI FI ON (FC.SucCod = FI.SucCod and FC.CliCod = FI.CliCod and FC.SumNro = FI.SumNro and FC.FrmCod = FI.FrmCod 
+			and FC.FactLet = FI.FactLet and FC.FactPtoV = FI.FactPtoV and FC.FactNro = FI.FactNro)
+
+	WHERE FC.SucCod = 1 AND FC.FrmCod IN (1,3,50) AND YEAR(FC.FactFec) >= YEAR(GETDATE())-1 /*AND FC.CliCod <> 1100*/ AND FC.FactPtoV in (0,12,13,14)
+		and FC.Factquin <> 9 /*and FC.FactAnu <> 1*/  -- ¿Qué pasa con las anuladas por NC? ¿No estoy incluyendo la NC sin incluir la original?
+		and FC.FactNro > 0
+) X
+GROUP BY Socio, Suministro, Comprobante, FechaEmision, FechaVencimiento, Servicio, Area, Categoria, Tarifa, Subtotal, Energetico
+2024-09-27 13:06:35 - Vista exportada: dbo.ReporteFacturacionDetallado
+/****** Object:  View [dbo].[ReporteFacturacionResumido]    Script Date: 27/09/2024 13:06:35 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+
+
+
+
+
+
+
+
+/* drop view ReporteFacturacionResumido */
+CREATE VIEW [dbo].[ReporteFacturacionResumido] AS
+
+SELECT MesEmision, AñoEmision, FechaEmision, MesVto, AñoVto, Area, Categoria, Tarifa,
+	Subtotal, SUM(Importe) Importe, SUM(Saldo) Saldo
+FROM
+(
+	SELECT MONTH(FC.FactFec) AS MesEmision,
+		YEAR(FC.FactFec) AS AñoEmision,
+		FC.FactFec AS FechaEmision,
+		MONTH(FC.FactVto1) AS MesVto,
+		YEAR(FC.FactVto1) AS AñoVto,
+		FS.Fac1Srv Servicio,
+		FS.Fac1Are Area,
+		FS.Fac1Ctg Categoria,
+		FS.Fac1EttCod Tarifa,	
+		CASE WHEN FC.FrmCod = 50 THEN -FI.Fac2Imp1 ELSE FI.Fac2Imp1 END Importe,
+		CASE WHEN FC.FrmCod = 50 THEN -FI.Fac2Sdo ELSE FI.Fac2Sdo END Saldo,
+		CASE WHEN FI.CliCod = 1100 THEN 'Municipalidad' 
+			WHEN FI.Fac2Cnp BETWEEN 0 and 38 AND FI.Fac2Itm NOT BETWEEN 2007 and 2010 THEN 'Energía'
+			WHEN FI.Fac2Itm BETWEEN 2007 and 2010 THEN 'ICT'
+			WHEN FI.Fac2Cnp in (200, 901) THEN 'Cuota Capital'
+			WHEN FI.Fac2Cnp BETWEEN 700 and 750 THEN 'Impuestos'
+			WHEN FI.Fac1Srv = 10 AND (FI.Fac2Cnp BETWEEN 100 and 110 OR FI.Fac2Cnp BETWEEN 346 AND 351 OR FI.Fac2Cnp BETWEEN 390 AND 602
+				OR FI.Fac2Cnp = 960) THEN 'Servicios Sociales'
+			WHEN FI.Fac1Srv = 5 AND (FI.Fac2Cnp BETWEEN 620 and 646 OR FI.Fac2Cnp BETWEEN 661 and 675) THEN 'Telecomunicaciones'
+			WHEN FI.Fac2Itm = 8550 THEN 'Suscrip. Acciones'
+			ELSE 'Otros' END Subtotal
+	FROM [UPCN_COM_PROD].dbo.FACTUC FC
+		OUTER APPLY (SELECT TOP(1) * FROM [UPCN_COM_PROD].dbo.FACTUS FS WHERE FC.SucCod = FS.SucCod AND FC.CliCod = FS.CliCod AND FC.SumNro = FS.SumNro AND
+			FC.FrmCod = FS.FrmCod and FC.FactLet = FS.FactLet and FC.FactPtoV = FS.FactPtoV and FC.FactNro = FS.FactNro 
+			ORDER BY FS.Fac1Srv
+		) FS
+		JOIN [UPCN_COM_PROD].dbo.FACTUI FI ON (FC.SucCod = FI.SucCod and FC.CliCod = FI.CliCod and FC.SumNro = FI.SumNro and FC.FrmCod = FI.FrmCod 
+			and FC.FactLet = FI.FactLet and FC.FactPtoV = FI.FactPtoV and FC.FactNro = FI.FactNro)
+
+	WHERE FC.SucCod = 1 AND FC.FrmCod IN (1,3,50) AND YEAR(FC.FactFec) >= YEAR(GETDATE())-1 /*AND FC.CliCod <> 1100*/ AND FC.FactPtoV in (0,12,13,14)
+		and FC.Factquin <> 9 and FC.FactAnu <> 1  -- ¿Qué pasa con las anuladas por NC? ¿No estoy incluyendo la NC sin incluir la original?
+		and FC.FactNro > 0
+) X
+GROUP BY Servicio, Area, Categoria, Tarifa,
+	MesEmision, AñoEmision, FechaEmision, MesVto, AñoVto, Subtotal
+	/*, RC.ResuImp*/
+2024-09-27 13:06:35 - Vista exportada: dbo.ReporteFacturacionResumido
+/****** Object:  View [dbo].[ReporteOrdenesDePago]    Script Date: 27/09/2024 13:06:35 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+
+/* drop  view [dbo].[ReporteOrdenesDePago] */
+Create view [dbo].[ReporteOrdenesDePago] as
+SELECT OP2.OP2Fec Fecha, OP2.OP1Nro OrdenPago, Op2Prv CodProveedor, P.PrvNom Nombre, OP2Imp Importe
+  FROM [UPCN_ERP_PROD].[dbo].[ORDPA2] OP2
+	JOIN [UPCN_ERP_PROD].[dbo].[PROVE1] P ON (OP2.OP2Prv = P.PrvCod AND P.SucCod = 1)
+  where YEAR(OP2Fec) >= YEAR(GETDATE())-1
+2024-09-27 13:06:35 - Vista exportada: dbo.ReporteOrdenesDePago
+/****** Object:  View [dbo].[ReportePrepago]    Script Date: 27/09/2024 13:06:35 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+/****** Script for SelectTopNRows command from SSMS  ******/
+
+CREATE VIEW ReportePrepago AS
+SELECT c.fecha_creacion "Fecha Compra", 
+	co.nombre Vendedor, 
+	c.importe Importe,
+	c.kw Kwh
+FROM [UPCN_SISTEMAS_PREPAGO].[dbo].[compra] c
+	JOIN [UPCN_SISTEMAS_PREPAGO].dbo.jhi_user u on (c.vendedor_id = u.id)
+    JOIN [UPCN_SISTEMAS_PREPAGO].dbo.comerciante co on (co.id = u.comerciante_id)
+WHERE c.estado_pago = 'Generado'
+
+  --where fecha_creacion between '01/01/2023' and '01/02/2023'
+2024-09-27 13:06:35 - Vista exportada: dbo.ReportePrepago
+/****** Object:  View [dbo].[ReporteSueldos]    Script Date: 27/09/2024 13:06:36 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+
+
+
+
+
+
+
+
+/* drop view ReporteSueldos */
+create view [dbo].[ReporteSueldos] as
+select LiqAno Año, LiqMes Mes, CONCAT('01/', RIGHT('00' + CAST(LiqMes as VARCHAR(2)), 2), '/', LiqAno) Fecha, 
+	LiqLeg Legajo, 
+	E1.EmpNom Nombre,
+	CONCAT(E2.CafCod, ' | ', FR.ObrDsc) AS Frente,
+	TL.TpoLiqDsc 'Tipo Liquidacion',
+	Liq1Cnc Concepto,
+	CONCAT(RIGHT(CONCAT('0000', Liq1Cnc), 4), ' | ', C.ConDsc) 'Descripción Concepto',
+	Liq1Cal Importe,
+	CONCAT(Liq1TpoCo, ' | ',
+		CASE WHEN Liq1TpoCo = 1 THEN 'Remunerativo' ELSE
+		CASE WHEN Liq1TpoCo = 2 THEN 'No remunerativo' ELSE
+		CASE WHEN Liq1TpoCo = 3 THEN 'Salario familiar' ELSE
+		CASE WHEN Liq1TpoCo = 4 THEN 'Retenciones' ELSE
+		CASE WHEN Liq1TpoCo = 5 THEN 'Deducciones vs.' ELSE
+		CASE WHEN Liq1TpoCo = 6 THEN 'Aportes' ELSE
+		CASE WHEN Liq1TpoCo = 7 THEN 'Provisión' ELSE ''
+		END END END END END END END		
+	) 'Tipo Concepto',
+	LiqConTD 'Transitorio o definitivo',
+	CASE WHEN (L1.Liq1TpoCo < 3 OR L1.Liq1TpoCo = 6) AND L1.LiqConTD = 'D' THEN Liq1Cal 
+		ELSE 0 END ImporteParaBruto,
+	CASE WHEN L1.Liq1TpoCo < 3 AND L1.LiqConTD = 'D' THEN Liq1Cal 
+		WHEN (L1.Liq1TpoCo = 4 OR L1.Liq1TpoCo = 5) AND L1.LiqConTD = 'D' THEN -Liq1Cal 
+		ELSE 0 END ImporteParaNeto,
+	CASE WHEN L1.LiqConTD = 'D' THEN Liq1Cal ELSE 0 END ImporteSoloDefinitivos,
+	CASE WHEN L1.Liq1Cnc BETWEEN 6807 AND 6997 THEN Liq1Cal ELSE 0 END TotalOrdenesPago,
+	CASE WHEN L1.Liq1Cnc BETWEEN 3000 AND 3019 AND L1.LiqConTD = 'D' THEN 'BAE'
+		WHEN L1.Liq1Cnc BETWEEN 6790 AND 6799 AND L1.LiqConTD = 'D' THEN 'Imp. Ganancias'
+		WHEN (L1.Liq1Cnc = 3500 OR L1.Liq1Cnc = 3510) AND L1.LiqConTD = 'D' THEN 'SAC'
+		WHEN L1.Liq1Cnc = 2084 AND L1.LiqConTD = 'D' THEN 'Plus Vacacional'
+		WHEN L1.Liq1Cnc BETWEEN 2006 AND 2046 AND L1.LiqConTD = 'D' THEN 'Hs. Extras' /***** REVISAR *****/
+		WHEN (L1.Liq1Cnc = 4450 OR L1.Liq1Cnc = 4460) AND L1.LiqConTD = 'D' THEN 'Art. 9'
+		WHEN (L1.Liq1Cnc = 130 OR L1.Liq1Cnc = 135) AND L1.LiqConTD = 'D' THEN 'Jubilados Luz/Gas'
+		WHEN (L1.Liq1TpoCo = 6) THEN 'Aportes'		
+		ELSE 'General'
+	END GrupoDeInteres,
+	(SELECT ConCta FROM [UPCN_RRHH_PROD].dbo.CONCEPLEVEL1 C1 
+		WHERE L1.LiqSuc = C1.SucCod and C1.ConCod = L1.Liq1Cnc and C1.ConCodDC = 'C'
+			AND C1.ConVig = '01/01/1753' AND C1.ConSS = E2.CafCod) AS CuentaCredito,
+	(SELECT ConCta FROM [UPCN_RRHH_PROD].dbo.CONCEPLEVEL1 C2
+		WHERE L1.LiqSuc = C2.SucCod and C2.ConCod = L1.Liq1Cnc and C2.ConCodDC = 'D'
+			AND C2.ConVig = '01/01/1753' AND C2.ConSS = E2.CafCod) AS CuentaDebito,
+	FIJOS.EmpCVal1 'Cpto val.fijo 1',
+	FIJOS.EmpCVal2 'Cpto val.fijo 2',
+	E2.CenCod CodCentroCosto,
+	CTO.CctDsc CentroCosto
+from [UPCN_RRHH_PROD].dbo.LIQUID1 L1
+	join [UPCN_RRHH_PROD].dbo.EMPLE1 E1 ON (L1.LiqSuc = E1.SucCod AND L1.LiqLeg = E1.EmpLeg)
+	join [UPCN_RRHH_PROD].dbo.EMPLE2 E2 ON (L1.LiqSuc = E2.SucCod AND L1.LiqLeg = E2.EmpLeg AND E2.EmpVig = '01/01/1753')
+	join [UPCN_RRHH_PROD].dbo.CONCE21 C ON (L1.LiqSuc = C.SucCod and L1.Liq1Cnc = C.ConCod and C.ConVig = '01/01/1753')
+	left join [UPCN_RRHH_PROD].dbo.FRENTE FR ON (E2.CafCod = FR.ObrCod)
+	join [UPCN_RRHH_PROD].dbo.TIPLIQ TL ON (L1.LiqTpoLiq = TL.TpoLiqCod)
+	outer apply ( 
+		/* 05/07/2024: Pedido por Johanna y Gaby al presentar Planilla22 v1. 
+		Lo armo así para asegurarme de no duplicar filas.
+		ESTO VA A HABER QUE REHACERLO EN UN REPORTE QUE ARRANQUE DEL LEGAJO ("INFORME DE PERSONAL"), 
+		ACÁ SE PIERDEN FILAS DE CONCEPTOS QUE TIENEN VALORES FIJOS PERO NO FUERON LIQUIDADOS (O AUN NO).
+		*/
+		select top(1) FL1.EmpCVal1, FL1.EmpCVal2
+		from [UPCN_RRHH_PROD].[dbo].[FIJOSLEVEL1] FL1
+		where SucCod = 1 and EmpVig = '01/01/1753' and EmpCCodVig = '01/01/1753' and EmpCVig = '01/01/1753'
+			and FL1.EmpLeg = L1.LiqLeg and FL1.EmpCCod = L1.Liq1Cnc
+	) FIJOS
+	left join [UPCN_ERP_PROD].[dbo].[CTOCTO] CTO ON (E2.CenCod = CTO.CctCod)
+where L1.LiqSuc = 1 --and LiqLeg < 5000 
+	--and L1.Liq1Cnc in (100, 3800, 6798, 8995)
+	and LiqTpoLiq in ('0', '4', '7', 'I', 'J')
+	--and L1.LiqConTD = 'D'
+	--and LiqAno >= 2023 --and LiqMes in (3,4)
+	and (LiqAno >= 2020 and LiqAno < 2100) --!
+
+	-- TEST
+	--and LiqAno = 2023 and LiqMes = 6 and LiqLeg = 270
+2024-09-27 13:06:36 - Vista exportada: dbo.ReporteSueldos
+/****** Object:  View [dbo].[TelecomunicacionesNAP]    Script Date: 27/09/2024 13:06:36 ******/
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+/* DROP VIEW TelecomunicacionesNAP */
+CREATE VIEW 
+	TelecomunicacionesNAP
+AS
+SELECT
+    CO.CliCod Socio
+    ,CO.SumNro Suministro
+	,P.CliApe Nombre
+	,CONCAT(TRIM(I.InmCllDsc), ' ', I.InmAlt) Domicilio
+    , CASE WHEN TRIM(Sum2Port) = 'SI' OR Sum2Port = '' OR Sum2Port IS NULL THEN 'Sin datos' ELSE Sum2Port END NAP
+	,CO.Sum2Sts
+FROM [UPCN_COM_PROD].dbo.CONTRATO CO	
+	JOIN [UPCN_COM_PROD].dbo.PERSONA P ON (CO.SucCod = P.SucCod AND CO.CliCod = P.CliCod)
+	JOIN [UPCN_COM_PROD].dbo.CUENTA C ON (CO.SucCod = C.SucCod AND CO.CliCod = C.CliCod AND CO.SumNro = C.SumNro)
+	JOIN [UPCN_COM_PROD].dbo.INMUEBLE I ON (C.InmCod = I.InmCod)
+	OUTER APPLY (
+		SELECT TOP(1) FC.FactNro 
+		FROM [UPCN_COM_PROD].dbo.FACTUC FC 
+		WHERE FC.SucCod = CO.SucCod AND FC.CliCod = CO.CliCod AND FC.SumNro = CO.SumNro 
+			AND FC.FactFec > DATEADD(MONTH, -2, GETDATE())
+	) F
+WHERE CO.SucCod = 1 and CO.SrvCod = 5 and Sum2Sts < 4
+	AND F.FactNro IS NOT NULL
+2024-09-27 13:06:36 - Vista exportada: dbo.TelecomunicacionesNAP
+2024-09-27 13:06:40 - NÃºmero de funciones encontradas: 2

@@ -87,7 +87,7 @@ catch {
 
 # Exportar Funciones
 try {
-    $funciones = $baseDeDatosSmo.UserDefinedFunctions | Where-Object { $_.IsSystemObject -eq $false -and $_.FunctionType -eq 'Table' }
+    $funciones = $baseDeDatosSmo.UserDefinedFunctions | Where-Object { $_.IsSystemObject -eq $false }
     Registrar-Mensaje "Número de funciones encontradas: $($funciones.Count)"
 
     foreach ($funcion in $funciones) {
