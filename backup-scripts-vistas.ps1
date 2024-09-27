@@ -125,7 +125,7 @@ catch {
 
 # Hacer commit de los cambios con un mensaje con timestamp
 try {
-    $mensajeCommit = "Actualización de vistas y funciones - $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+    $mensajeCommit = "Actualizacion de vistas y funciones - $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
     git commit -m $mensajeCommit
     Registrar-Mensaje "Commit realizado con el mensaje: '$mensajeCommit'"
 }
