@@ -1,12 +1,12 @@
 ﻿**********************
 Inicio de la transcripción de Windows PowerShell
-Hora de inicio: 20240927133222
+Hora de inicio: 20240927133401
 Nombre de usuario: UPCN\nechegoyen
 Usuario RunAs: UPCN\nechegoyen
 Nombre de la configuración: 
 Máquina: SYS-NESTOR2 (Microsoft Windows NT 10.0.22631.0)
 Aplicación host: powershell.exe -ExecutionPolicy Bypass -File C:\Repos\reportes-sql\backup-scripts-vistas.ps1
-Id. de proceso: 27728
+Id. de proceso: 27700
 PSVersion: 5.1.22621.4249
 PSEdition: Desktop
 PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.4249
@@ -16,5 +16,3 @@ WSManStackVersion: 3.0
 PSRemotingProtocolVersion: 2.3
 SerializationVersion: 1.1.0.1
 **********************
-La transcripción ha comenzado. El archivo de salida es C:\Repos\reportes-sql\transcript_log.txt
-2024-09-27 13:32:22 - Iniciando proceso de exportaciÃ³n...
