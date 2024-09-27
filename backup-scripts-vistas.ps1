@@ -1,3 +1,5 @@
+# Creado por ChatGPT 4o 27/09/2024
+
 # Definir variables de conexión
 $servidor = "192.168.0.230"
 $baseDeDatos = "UPCN_REPORTES"
@@ -142,40 +144,8 @@ catch {
     Registrar-Mensaje "Error al hacer push a Git: $_"
 }
 
-
-# Navegar al repositorio de Git de reportes 
-Set-Location "C:\Repos\reportes-gerenciales-xls"
-
-# Agregar cambios al área de preparación de Git
-try {
-    git add .
-    Registrar-Mensaje "Cambios preparados para Git."
-}
-catch {
-    Registrar-Mensaje "Error al preparar cambios: $_"
-}
-
-# Hacer commit de los cambios con un mensaje con timestamp
-try {
-    $mensajeCommit = "Actualizacion de reportes Excel y PowerBI - $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
-    git commit -m $mensajeCommit
-    Registrar-Mensaje "Commit realizado con el mensaje: '$mensajeCommit'"
-}
-catch {
-    Registrar-Mensaje "Error al hacer commit: $_"
-}
-
-# Hacer push de los cambios al repositorio remoto
-try {
-    git push origin master  # Cambiar 'main' si tu rama principal tiene otro nombre
-    Registrar-Mensaje "Cambios subidos al repositorio remoto."
-}
-catch {
-    Registrar-Mensaje "Error al hacer push a Git: $_"
-}
-
-
 Registrar-Mensaje "Proceso de exportación y Git finalizado."
 
 # Terminar la grabación del log
 Stop-Transcript
+Exit 0
