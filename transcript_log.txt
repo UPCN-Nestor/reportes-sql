@@ -40,3 +40,46 @@ To https://github.com/UPCN-Nestor/reportes-sql.git
 Fin de la transcripción de Windows PowerShell
 Hora de finalización: 20240927124337
 **********************
+**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20240927124616
+Nombre de usuario: UPCN\nechegoyen
+Usuario RunAs: UPCN\nechegoyen
+Nombre de la configuración: 
+Máquina: SYS-NESTOR2 (Microsoft Windows NT 10.0.22631.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 25792
+PSVersion: 5.1.22621.4249
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.4249
+BuildVersion: 10.0.22621.4249
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+La transcripción ha comenzado. El archivo de salida es C:\Repos\reportes-sql\transcript_log.txt
+2024-09-27 12:46:16 - Iniciando proceso de exportaciÃ³n...
+2024-09-27 12:46:16 - Conectado al servidor SQL 192.168.0.230 y a la base de datos UPCN_REPORTES correctamente.
+2024-09-27 12:46:16 - NÃºmero de vistas encontradas: 0
+
+2024-09-27 12:46:16 - Cambios preparados para Git.
+[main 6442b44] ActualizaciÃ³n de vistas y funciones - 2024-09-27 12:46:16
+ 3 files changed, 27 insertions(+), 261 deletions(-)
+ delete mode 100644 log.txt
+2024-09-27 12:46:16 - Commit realizado con el mensaje: 'ActualizaciÃ³n de vistas y funciones - 2024-09-27 12:46:16'
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 28 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 1.39 KiB | 1.39 MiB/s, done.
+Total 4 (delta 1), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/UPCN-Nestor/reportes-sql.git
+   35b1135..6442b44  main -> main
+2024-09-27 12:46:18 - Cambios subidos al repositorio remoto.
+2024-09-27 12:46:18 - Proceso de exportaciÃ³n y Git finalizado.
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20240927124618
+**********************

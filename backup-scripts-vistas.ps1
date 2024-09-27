@@ -52,7 +52,7 @@ if (-not (Test-Path $directorioFunciones)) {
 
 # Exportar Vistas
 try {
-    $vistas = $instanciaBaseDatos.Views | Where-Object { $_.IsSystemObject -eq $false }
+    $vistas = $instanciaBaseDatos.Views | Where-Object { $_.IsSystemObject -eq $false -and $_.Schema -eq "dbo"  }
     Registrar-Mensaje "Número de vistas encontradas: $($vistas.Count)"
     
     $vistas | ForEach-Object {
