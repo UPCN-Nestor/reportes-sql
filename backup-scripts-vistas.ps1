@@ -88,7 +88,7 @@ catch {
 # Exportar Funciones
 try {
 	Registrar-Mensaje "Iniciando exportación de funciones..."
-    $funciones = $baseDeDatosSmo.UserDefinedFunctions | Where-Object { $_.IsSystemObject -eq $false }
+    $funciones = $baseDeDatosSmo.UserDefinedFunctions | Where-Object { $_.IsSystemObject -eq $false } | Out-Null
     Registrar-Mensaje "Número de funciones encontradas: $($funciones.Count)"
 
     foreach ($funcion in $funciones) {
