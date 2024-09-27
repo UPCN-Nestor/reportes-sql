@@ -1,8 +1,8 @@
 # Definir variables de conexión
 $servidor = "192.168.0.230"
 $baseDeDatos = "UPCN_REPORTES"
-$usuario = "consultas"
-$password = "Csua2018"
+$usuario = "glmapp"
+$password = "palmera123+"
 $directorioSalida = "C:\Repos\reportes-sql\SQL_Exports"  # Ruta hacia tu repositorio local de Git
 $archivoLog = "C:\Repos\reportes-sql\transcript_log.txt"  # Archivo de log del transcript
 
