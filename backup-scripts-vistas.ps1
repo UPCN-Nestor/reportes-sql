@@ -7,7 +7,7 @@ $directorioSalida = "C:\Repos\reportes-sql\SQL_Exports"  # Ruta a tu repositorio
 $archivoLog = "C:\Repos\reportes-sql\transcript_log.txt"  # Archivo de log del transcript
 
 # Iniciar la grabación del log
-Start-Transcript -Path $archivoLog 
+Start-Transcript -Path $archivoLog -Force
 
 # Función para registrar mensajes en la consola
 function Registrar-Mensaje {
@@ -77,7 +77,7 @@ try {
         $scriptOptions.IncludeHeaders = $true
         $scriptOptions.FileName = $rutaArchivo
 
-        $vista.Script($scriptOptions)
+        $vista.Script($scriptOptions) | Out-Null
         Registrar-Mensaje "Vista exportada: $schema.$nombre"
     }
 }
@@ -87,6 +87,7 @@ catch {
 
 # Exportar Funciones
 try {
+	Registrar-Mensaje "Iniciando exportación de funciones..."
     $funciones = $baseDeDatosSmo.UserDefinedFunctions | Where-Object { $_.IsSystemObject -eq $false }
     Registrar-Mensaje "Número de funciones encontradas: $($funciones.Count)"
 
@@ -102,7 +103,7 @@ try {
         $scriptOptions.IncludeHeaders = $true
         $scriptOptions.FileName = $rutaArchivo
 
-        $funcion.Script($scriptOptions)
+        $funcion.Script($scriptOptions) | Out-Null
         Registrar-Mensaje "Función exportada: $schema.$nombre"
     }
 }
