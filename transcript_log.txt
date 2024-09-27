@@ -1,6 +1,6 @@
 ﻿**********************
 Inicio de la transcripción de Windows PowerShell
-Hora de inicio: 20240927131931
+Hora de inicio: 20240927131953
 Nombre de usuario: UPCN\nechegoyen
 Usuario RunAs: UPCN\nechegoyen
 Nombre de la configuración: 
@@ -17,5 +17,5 @@ PSRemotingProtocolVersion: 2.3
 SerializationVersion: 1.1.0.1
 **********************
 La transcripción ha comenzado. El archivo de salida es C:\Repos\reportes-sql\transcript_log.txt
-2024-09-27 13:19:31 - Iniciando proceso de exportaciÃ³n...
-2024-09-27 13:19:31 - Conectado al servidor SQL 192.168.0.230 y a la base de datos UPCN_REPORTES correctamente.
+2024-09-27 13:19:53 - Iniciando proceso de exportaciÃ³n...
+2024-09-27 13:19:53 - Conectado al servidor SQL 192.168.0.230 y a la base de datos UPCN_REPORTES correctamente.
