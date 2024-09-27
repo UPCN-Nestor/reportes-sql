@@ -16,7 +16,7 @@ function Registrar-Mensaje {
     )
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $entradaLog = "$timestamp - $mensaje"
-    Write-Host $entradaLog  # Sólo mostramos en la consola
+    Write-Host $entradaLog  # Solo mostramos en la consola
 }
 
 Registrar-Mensaje "Iniciando proceso de exportación..."
@@ -50,10 +50,10 @@ if (-not (Test-Path $directorioFunciones)) {
     New-Item -ItemType Directory -Force -Path $directorioFunciones
 }
 
-# Exportar Vistas
+# Exportar Vistas desde el esquema dbo
 try {
-    $vistas = $instanciaBaseDatos.Views | Where-Object { $_.IsSystemObject -eq $false -and $_.Schema -eq "dbo"  }
-    Registrar-Mensaje "Número de vistas encontradas: $($vistas.Count)"
+    $vistas = $instanciaBaseDatos.Views | Where-Object { $_.IsSystemObject -eq $false -and $_.Schema -eq "dbo" }
+    Registrar-Mensaje "Número de vistas encontradas en el esquema dbo: $($vistas.Count)"
     
     $vistas | ForEach-Object {
         $script = $_.Script()
@@ -65,12 +65,15 @@ catch {
     Registrar-Mensaje "Error al exportar vistas: $_"
 }
 
-# Exportar Funciones con valor de tabla
+# Exportar Funciones con valor de tabla desde el esquema dbo
 try {
-    $instanciaBaseDatos.UserDefinedFunctions | Where-Object { $_.FunctionType -eq "Table" } | ForEach-Object {
+    $funciones = $instanciaBaseDatos.UserDefinedFunctions | Where-Object { $_.FunctionType -eq "Table" -and $_.Schema -eq "dbo" }
+    Registrar-Mensaje "Número de funciones encontradas en el esquema dbo: $($funciones.Count)"
+    
+    $funciones | ForEach-Object {
         $script = $_.Script()
-        $script | Out-File "$directorioFunciones\$($_.Name).sql"
-        Registrar-Mensaje "Función exportada: $($_.Name)"
+        $script | Out-File "$directorioFunciones\$($_.Schema)_$($_.Name).sql"
+        Registrar-Mensaje "Función exportada: $($_.Schema).$($_.Name)"
     }
 }
 catch {
