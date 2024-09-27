@@ -52,10 +52,13 @@ if (-not (Test-Path $directorioFunciones)) {
 
 # Exportar Vistas
 try {
-    $instanciaBaseDatos.Views | Where-Object { $_.IsSystemObject -eq $false } | ForEach-Object {
+    $vistas = $instanciaBaseDatos.Views | Where-Object { $_.IsSystemObject -eq $false }
+    Registrar-Mensaje "Número de vistas encontradas: $($vistas.Count)"
+    
+    $vistas | ForEach-Object {
         $script = $_.Script()
-        $script | Out-File "$directorioVistas\$($_.Name).sql"
-        Registrar-Mensaje "Vista exportada: $($_.Name)"
+        $script | Out-File "$directorioVistas\$($_.Schema)_$($_.Name).sql"
+        Registrar-Mensaje "Vista exportada: $($_.Schema).$($_.Name)"
     }
 }
 catch {
