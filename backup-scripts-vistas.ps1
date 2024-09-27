@@ -7,7 +7,7 @@ $directorioSalida = "C:\Repos\reportes-sql\SQL_Exports"  # Ruta a tu repositorio
 $archivoLog = "C:\Repos\reportes-sql\transcript_log.txt"  # Archivo de log del transcript
 
 # Iniciar la grabación del log
-Start-Transcript -Path $archivoLog -Append
+Start-Transcript -Path $archivoLog 
 
 # Función para registrar mensajes en la consola
 function Registrar-Mensaje {
