@@ -143,7 +143,7 @@ catch {
 }
 
 
-# Navegar al repositorio de Git
+# Navegar al repositorio de Git de reportes 
 Set-Location "C:\Repos\reportes-gerenciales-xls"
 
 # Agregar cambios al área de preparación de Git
@@ -167,7 +167,7 @@ catch {
 
 # Hacer push de los cambios al repositorio remoto
 try {
-    git push origin main  # Cambiar 'main' si tu rama principal tiene otro nombre
+    git push origin master  # Cambiar 'main' si tu rama principal tiene otro nombre
     Registrar-Mensaje "Cambios subidos al repositorio remoto."
 }
 catch {
