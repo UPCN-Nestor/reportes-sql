@@ -1,12 +1,12 @@
 ﻿**********************
 Inicio de la transcripción de Windows PowerShell
-Hora de inicio: 20240927135224
+Hora de inicio: 20240927135339
 Nombre de usuario: UPCN\nechegoyen
 Usuario RunAs: UPCN\nechegoyen
 Nombre de la configuración: 
 Máquina: SYS-NESTOR2 (Microsoft Windows NT 10.0.22631.0)
-Aplicación host: powershell.exe -ExecutionPolicy Bypass -File C:\Repos\reportes-sql\backup-scripts-vistas.ps1
-Id. de proceso: 25420
+Aplicación host: powershell.exe -ExecutionPolicy Bypass -NoProfile -NonInteractive -File C:\Repos\reportes-sql\backup-scripts-vistas.ps1
+Id. de proceso: 27804
 PSVersion: 5.1.22621.4249
 PSEdition: Desktop
 PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.4249
@@ -17,3 +17,19 @@ PSRemotingProtocolVersion: 2.3
 SerializationVersion: 1.1.0.1
 **********************
 La transcripción ha comenzado. El archivo de salida es C:\Repos\reportes-sql\transcript_log.txt
+2024-09-27 13:53:39 - Iniciando proceso de exportaciÃ³n...
+2024-09-27 13:53:39 - Conectado al servidor SQL 192.168.0.230 y a la base de datos UPCN_REPORTES correctamente.
+2024-09-27 13:53:41 - NÃºmero de vistas encontradas: 12
+2024-09-27 13:53:41 - Vista exportada: dbo.ConsumosEnCero
+2024-09-27 13:53:41 - Vista exportada: dbo.Geo
+2024-09-27 13:53:41 - Vista exportada: dbo.ReporteCobranza
+2024-09-27 13:53:41 - Vista exportada: dbo.ReporteCuotaCapital
+2024-09-27 13:53:41 - Vista exportada: dbo.ReporteDeuda
+2024-09-27 13:53:41 - Vista exportada: dbo.ReporteFacturacion-bak
+2024-09-27 13:53:41 - Vista exportada: dbo.ReporteFacturacionDetallado
+2024-09-27 13:53:41 - Vista exportada: dbo.ReporteFacturacionResumido
+2024-09-27 13:53:41 - Vista exportada: dbo.ReporteOrdenesDePago
+2024-09-27 13:53:41 - Vista exportada: dbo.ReportePrepago
+2024-09-27 13:53:41 - Vista exportada: dbo.ReporteSueldos
+2024-09-27 13:53:41 - Vista exportada: dbo.TelecomunicacionesNAP
+2024-09-27 13:53:41 - Iniciando exportaciÃ³n de funciones...
