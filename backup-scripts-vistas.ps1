@@ -1,10 +1,9 @@
 # Definir variables de conexión
 $servidor = "192.168.0.230"
-$instancia = "UPCN_REPORTES"  # Si tienes una instancia nombrada
 $baseDeDatos = "UPCN_REPORTES"
 $usuario = "consultas"
 $password = "Csua2018"
-$directorioSalida = "C:\Repos\reportes-sql\SQL_Exports"  # Ruta hacia tu repositorio local de Git
+$directorioSalida = "C:\Repos\reportes-sql\SQL_Exports"  # Ruta a tu repositorio local de Git
 $archivoLog = "C:\Repos\reportes-sql\transcript_log.txt"  # Archivo de log del transcript
 
 # Iniciar la grabación del log
@@ -22,6 +21,35 @@ function Registrar-Mensaje {
 
 Registrar-Mensaje "Iniciando proceso de exportación..."
 
+# Cargar el módulo de SQL Server
+Import-Module SqlServer
+
+# Crear conexión con el servidor SQL
+try {
+    $conexion = New-Object Microsoft.SqlServer.Management.Common.ServerConnection
+    $conexion.ServerInstance = $servidor
+    $conexion.DatabaseName = $baseDeDatos
+    $conexion.LoginSecure = $false  # Usar autenticación SQL Server
+    $conexion.Login = $usuario
+    $conexion.Password = $password
+
+    $servidorSmo = New-Object Microsoft.SqlServer.Management.Smo.Server($conexion)
+    $baseDeDatosSmo = $servidorSmo.Databases[$baseDeDatos]
+
+    if ($baseDeDatosSmo -eq $null) {
+        Registrar-Mensaje "No se pudo acceder a la base de datos $baseDeDatos."
+        Stop-Transcript
+        exit 1
+    }
+
+    Registrar-Mensaje "Conectado al servidor SQL $servidor y a la base de datos $baseDeDatos correctamente."
+}
+catch {
+    Registrar-Mensaje "Error al conectar con el servidor SQL: $_"
+    Stop-Transcript
+    exit 1
+}
+
 # Asegurar que existen los directorios de salida para Vistas y Funciones
 $directorioVistas = Join-Path $directorioSalida "Vistas"
 $directorioFunciones = Join-Path $directorioSalida "Funciones"
@@ -32,39 +60,24 @@ if (-not (Test-Path $directorioFunciones)) {
     New-Item -ItemType Directory -Force -Path $directorioFunciones | Out-Null
 }
 
-# Definir los parámetros de conexión para Invoke-Sqlcmd
-$parametrosConexion = @{
-    ServerInstance = "$servidor\$instancia"
-    Database       = $baseDeDatos
-    Username       = $usuario
-    Password       = $password
-}
-
-# Obtener la lista de vistas
+# Exportar Vistas
 try {
-    $consultaVistas = @"
-SELECT TABLE_SCHEMA, TABLE_NAME
-FROM INFORMATION_SCHEMA.VIEWS
-WHERE TABLE_SCHEMA NOT IN ('INFORMATION_SCHEMA', 'sys')
-"@
-
-    $vistas = Invoke-Sqlcmd @parametrosConexion -Query $consultaVistas
-
+    $vistas = $baseDeDatosSmo.Views | Where-Object { $_.IsSystemObject -eq $false }
     Registrar-Mensaje "Número de vistas encontradas: $($vistas.Count)"
 
     foreach ($vista in $vistas) {
-        $schema = $vista.TABLE_SCHEMA
-        $nombre = $vista.TABLE_NAME
+        $schema = $vista.Schema
+        $nombre = $vista.Name
         $nombreArchivo = "${schema}_${nombre}.sql"
         $rutaArchivo = Join-Path $directorioVistas $nombreArchivo
 
-        # Obtener el script de creación de la vista
-        $consultaScriptVista = "EXEC sp_helptext '${schema}.${nombre}'"
-        $scriptVista = Invoke-Sqlcmd @parametrosConexion -Query $consultaScriptVista | Select-Object -ExpandProperty Text
+        # Generar el script de la vista
+        $scriptOptions = New-Object Microsoft.SqlServer.Management.Smo.ScriptingOptions
+        $scriptOptions.SchemaQualify = $true
+        $scriptOptions.IncludeHeaders = $true
+        $scriptOptions.FileName = $rutaArchivo
 
-        # Guardar el script en un archivo
-        $scriptVista | Out-File -FilePath $rutaArchivo -Encoding UTF8
-
+        $vista.Script($scriptOptions)
         Registrar-Mensaje "Vista exportada: $schema.$nombre"
     }
 }
@@ -72,31 +85,24 @@ catch {
     Registrar-Mensaje "Error al exportar vistas: $_"
 }
 
-# Obtener la lista de funciones con valor de tabla
+# Exportar Funciones
 try {
-    $consultaFunciones = @"
-SELECT ROUTINE_SCHEMA, ROUTINE_NAME
-FROM INFORMATION_SCHEMA.ROUTINES
-WHERE ROUTINE_TYPE = 'FUNCTION' AND DATA_TYPE = 'TABLE' AND ROUTINE_SCHEMA NOT IN ('INFORMATION_SCHEMA', 'sys')
-"@
-
-    $funciones = Invoke-Sqlcmd @parametrosConexion -Query $consultaFunciones
-
+    $funciones = $baseDeDatosSmo.UserDefinedFunctions | Where-Object { $_.IsSystemObject -eq $false -and $_.FunctionType -eq 'Table' }
     Registrar-Mensaje "Número de funciones encontradas: $($funciones.Count)"
 
     foreach ($funcion in $funciones) {
-        $schema = $funcion.ROUTINE_SCHEMA
-        $nombre = $funcion.ROUTINE_NAME
+        $schema = $funcion.Schema
+        $nombre = $funcion.Name
         $nombreArchivo = "${schema}_${nombre}.sql"
         $rutaArchivo = Join-Path $directorioFunciones $nombreArchivo
 
-        # Obtener el script de creación de la función
-        $consultaScriptFuncion = "EXEC sp_helptext '${schema}.${nombre}'"
-        $scriptFuncion = Invoke-Sqlcmd @parametrosConexion -Query $consultaScriptFuncion | Select-Object -ExpandProperty Text
+        # Generar el script de la función
+        $scriptOptions = New-Object Microsoft.SqlServer.Management.Smo.ScriptingOptions
+        $scriptOptions.SchemaQualify = $true
+        $scriptOptions.IncludeHeaders = $true
+        $scriptOptions.FileName = $rutaArchivo
 
-        # Guardar el script en un archivo
-        $scriptFuncion | Out-File -FilePath $rutaArchivo -Encoding UTF8
-
+        $funcion.Script($scriptOptions)
         Registrar-Mensaje "Función exportada: $schema.$nombre"
     }
 }
