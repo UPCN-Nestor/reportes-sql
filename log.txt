@@ -32,3 +32,137 @@ En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
     + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
 
 2024-09-27 12:41:37 - Iniciando proceso de exportaciÃ³n...
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo 
+utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+
+2024-09-27 12:41:37 - Conectado al servidor SQL 192.168.0.230 y a la base de datos UPCN_REPORTES correctamente.
+
+
+    Directorio: C:\Repos\reportes-sql\SQL_Exports
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+d-----        27/09/2024     12:41                Vistas
+d-----        27/09/2024     12:41                Funciones
+
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo 
+utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+
+2024-09-27 12:41:37 - Cambios preparados para Git.
+[main a772c98] ActualizaciÃ³n de vistas y funciones - 2024-09-27 12:41:37
+ 2 files changed, 130 insertions(+), 37 deletions(-)
+ create mode 100644 log.txt
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo 
+utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+
+2024-09-27 12:41:37 - Commit realizado con el mensaje: 'ActualizaciÃ³n de vistas y funciones - 2024-09-27 12:41:37'
+Enumerating objects: 6, done.
+Counting objects: 100% (6/6), done.
+Delta compression using up to 28 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 2.34 KiB | 2.34 MiB/s, done.
+Total 4 (delta 0), reused 0 (delta 0), pack-reused 0 (from 0)
+To https://github.com/UPCN-Nestor/reportes-sql.git
+   d197efb..a772c98  main -> main
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo 
+utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+
+2024-09-27 12:41:39 - Cambios subidos al repositorio remoto.
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo 
+utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+
+2024-09-27 12:41:39 - Proceso de exportaciÃ³n y Git finalizado.
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20240927124139
+**********************
+**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20240927124210
+Nombre de usuario: UPCN\nechegoyen
+Usuario RunAs: UPCN\nechegoyen
+Nombre de la configuración: 
+Máquina: SYS-NESTOR2 (Microsoft Windows NT 10.0.22631.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 25792
+PSVersion: 5.1.22621.4249
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.4249
+BuildVersion: 10.0.22621.4249
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+La transcripción ha comenzado. El archivo de salida es C:\Repos\reportes-sql\log.txt
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo 
+utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+Add-Content : El proceso no puede obtener acceso al archivo 'C:\Repos\reportes-sql\log.txt' porque está siendo utilizado en otro proceso.
+En C:\Repos\reportes-sql\backup-scripts-vistas.ps1: 16 Carácter: 5
++     Add-Content -Path $archivoLog -Value $entradaLog
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : WriteError: (C:\Repos\reportes-sql\log.txt:String) [Add-Content], IOException
+    + FullyQualifiedErrorId : GetContentWriterIOError,Microsoft.PowerShell.Commands.AddContentCommand
+
+2024-09-27 12:42:10 - Iniciando proceso de exportaciÃ³n...
