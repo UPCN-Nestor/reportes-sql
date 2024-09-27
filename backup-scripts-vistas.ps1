@@ -4,21 +4,21 @@ $baseDeDatos = "UPCN_REPORTES"
 $usuario = "consultas"
 $password = "Csua2018"
 $directorioSalida = "C:\Repos\reportes-sql\SQL_Exports"  # Ruta hacia tu repositorio local de Git
-$archivoLog = "C:\Repos\reportes-sql\log.txt"            # Ruta hacia el archivo de log
+$archivoLog = "C:\Repos\reportes-sql\transcript_log.txt"  # Archivo de log del transcript
 
-# Función para registrar mensajes en el log
+# Iniciar la grabación del log (Transcript maneja el log completo)
+Start-Transcript -Path $archivoLog -Append
+
+# Función para registrar mensajes en la consola
 function Registrar-Mensaje {
     param (
         [string]$mensaje
     )
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $entradaLog = "$timestamp - $mensaje"
-    Add-Content -Path $archivoLog -Value $entradaLog
-    Write-Host $entradaLog  # También lo mostramos en la consola
+    Write-Host $entradaLog  # Sólo mostramos en la consola
 }
 
-# Iniciar la grabación del log
-Start-Transcript -Path $archivoLog -Append
 Registrar-Mensaje "Iniciando proceso de exportación..."
 
 # Cargar el módulo de SQL Server
