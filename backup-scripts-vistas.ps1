@@ -1,12 +1,13 @@
 # Definir variables de conexión
 $servidor = "192.168.0.230"
+$instancia = "UPCN_REPORTES"  # Si tienes una instancia nombrada
 $baseDeDatos = "UPCN_REPORTES"
-$usuario = "glmapp"
-$password = "palmera123+"
+$usuario = "consultas"
+$password = "Csua2018"
 $directorioSalida = "C:\Repos\reportes-sql\SQL_Exports"  # Ruta hacia tu repositorio local de Git
 $archivoLog = "C:\Repos\reportes-sql\transcript_log.txt"  # Archivo de log del transcript
 
-# Iniciar la grabación del log (Transcript maneja el log completo)
+# Iniciar la grabación del log
 Start-Transcript -Path $archivoLog -Append
 
 # Función para registrar mensajes en la consola
@@ -16,64 +17,87 @@ function Registrar-Mensaje {
     )
     $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
     $entradaLog = "$timestamp - $mensaje"
-    Write-Host $entradaLog  # Solo mostramos en la consola
+    Write-Host $entradaLog
 }
 
 Registrar-Mensaje "Iniciando proceso de exportación..."
-
-# Cargar el módulo de SQL Server
-Import-Module SqlServer
-
-# Crear conexión con el servidor SQL
-try {
-    $cadenaConexion = "Server=$servidor;Database=$baseDeDatos;User Id=$usuario;Password=$password;"
-    $conexion = New-Object Microsoft.SqlServer.Management.Common.ServerConnection
-    $conexion.ConnectionString = $cadenaConexion
-    $instanciaServidor = New-Object Microsoft.SqlServer.Management.Smo.Server $conexion
-    $instanciaBaseDatos = $instanciaServidor.Databases[$baseDeDatos]
-
-    Registrar-Mensaje "Conectado al servidor SQL $servidor y a la base de datos $baseDeDatos correctamente."
-}
-catch {
-    Registrar-Mensaje "Error al conectar con el servidor SQL: $_"
-    Stop-Transcript
-    exit 1  # Salir si no se puede conectar
-}
 
 # Asegurar que existen los directorios de salida para Vistas y Funciones
 $directorioVistas = Join-Path $directorioSalida "Vistas"
 $directorioFunciones = Join-Path $directorioSalida "Funciones"
 if (-not (Test-Path $directorioVistas)) {
-    New-Item -ItemType Directory -Force -Path $directorioVistas
+    New-Item -ItemType Directory -Force -Path $directorioVistas | Out-Null
 }
 if (-not (Test-Path $directorioFunciones)) {
-    New-Item -ItemType Directory -Force -Path $directorioFunciones
+    New-Item -ItemType Directory -Force -Path $directorioFunciones | Out-Null
 }
 
-# Exportar Vistas desde el esquema dbo
+# Definir los parámetros de conexión para Invoke-Sqlcmd
+$parametrosConexion = @{
+    ServerInstance = "$servidor\$instancia"
+    Database       = $baseDeDatos
+    Username       = $usuario
+    Password       = $password
+}
+
+# Obtener la lista de vistas
 try {
-    $vistas = $instanciaBaseDatos.Views | Where-Object { $_.IsSystemObject -eq $false -and $_.Schema -eq "dbo" }
-    Registrar-Mensaje "Número de vistas encontradas en el esquema dbo: $($vistas.Count)"
-    
-    $vistas | ForEach-Object {
-        $script = $_.Script()
-        $script | Out-File "$directorioVistas\$($_.Schema)_$($_.Name).sql"
-        Registrar-Mensaje "Vista exportada: $($_.Schema).$($_.Name)"
+    $consultaVistas = @"
+SELECT TABLE_SCHEMA, TABLE_NAME
+FROM INFORMATION_SCHEMA.VIEWS
+WHERE TABLE_SCHEMA NOT IN ('INFORMATION_SCHEMA', 'sys')
+"@
+
+    $vistas = Invoke-Sqlcmd @parametrosConexion -Query $consultaVistas
+
+    Registrar-Mensaje "Número de vistas encontradas: $($vistas.Count)"
+
+    foreach ($vista in $vistas) {
+        $schema = $vista.TABLE_SCHEMA
+        $nombre = $vista.TABLE_NAME
+        $nombreArchivo = "${schema}_${nombre}.sql"
+        $rutaArchivo = Join-Path $directorioVistas $nombreArchivo
+
+        # Obtener el script de creación de la vista
+        $consultaScriptVista = "EXEC sp_helptext '${schema}.${nombre}'"
+        $scriptVista = Invoke-Sqlcmd @parametrosConexion -Query $consultaScriptVista | Select-Object -ExpandProperty Text
+
+        # Guardar el script en un archivo
+        $scriptVista | Out-File -FilePath $rutaArchivo -Encoding UTF8
+
+        Registrar-Mensaje "Vista exportada: $schema.$nombre"
     }
 }
 catch {
     Registrar-Mensaje "Error al exportar vistas: $_"
 }
 
-# Exportar Funciones con valor de tabla desde el esquema dbo
+# Obtener la lista de funciones con valor de tabla
 try {
-    $funciones = $instanciaBaseDatos.UserDefinedFunctions | Where-Object { $_.FunctionType -eq "Table" -and $_.Schema -eq "dbo" }
-    Registrar-Mensaje "Número de funciones encontradas en el esquema dbo: $($funciones.Count)"
-    
-    $funciones | ForEach-Object {
-        $script = $_.Script()
-        $script | Out-File "$directorioFunciones\$($_.Schema)_$($_.Name).sql"
-        Registrar-Mensaje "Función exportada: $($_.Schema).$($_.Name)"
+    $consultaFunciones = @"
+SELECT ROUTINE_SCHEMA, ROUTINE_NAME
+FROM INFORMATION_SCHEMA.ROUTINES
+WHERE ROUTINE_TYPE = 'FUNCTION' AND DATA_TYPE = 'TABLE' AND ROUTINE_SCHEMA NOT IN ('INFORMATION_SCHEMA', 'sys')
+"@
+
+    $funciones = Invoke-Sqlcmd @parametrosConexion -Query $consultaFunciones
+
+    Registrar-Mensaje "Número de funciones encontradas: $($funciones.Count)"
+
+    foreach ($funcion in $funciones) {
+        $schema = $funcion.ROUTINE_SCHEMA
+        $nombre = $funcion.ROUTINE_NAME
+        $nombreArchivo = "${schema}_${nombre}.sql"
+        $rutaArchivo = Join-Path $directorioFunciones $nombreArchivo
+
+        # Obtener el script de creación de la función
+        $consultaScriptFuncion = "EXEC sp_helptext '${schema}.${nombre}'"
+        $scriptFuncion = Invoke-Sqlcmd @parametrosConexion -Query $consultaScriptFuncion | Select-Object -ExpandProperty Text
+
+        # Guardar el script en un archivo
+        $scriptFuncion | Out-File -FilePath $rutaArchivo -Encoding UTF8
+
+        Registrar-Mensaje "Función exportada: $schema.$nombre"
     }
 }
 catch {

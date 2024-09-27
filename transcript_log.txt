@@ -168,3 +168,46 @@ To https://github.com/UPCN-Nestor/reportes-sql.git
 Fin de la transcripción de Windows PowerShell
 Hora de finalización: 20240927125257
 **********************
+**********************
+Inicio de la transcripción de Windows PowerShell
+Hora de inicio: 20240927125357
+Nombre de usuario: UPCN\nechegoyen
+Usuario RunAs: UPCN\nechegoyen
+Nombre de la configuración: 
+Máquina: SYS-NESTOR2 (Microsoft Windows NT 10.0.22631.0)
+Aplicación host: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Id. de proceso: 25792
+PSVersion: 5.1.22621.4249
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.22621.4249
+BuildVersion: 10.0.22621.4249
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+La transcripción ha comenzado. El archivo de salida es C:\Repos\reportes-sql\transcript_log.txt
+2024-09-27 12:53:57 - Iniciando proceso de exportaciÃ³n...
+2024-09-27 12:53:57 - Conectado al servidor SQL 192.168.0.230 y a la base de datos UPCN_REPORTES correctamente.
+2024-09-27 12:53:57 - NÃºmero de vistas encontradas en el esquema dbo: 0
+2024-09-27 12:53:57 - NÃºmero de funciones encontradas en el esquema dbo: 0
+
+2024-09-27 12:53:57 - Cambios preparados para Git.
+[main 30701f4] ActualizaciÃ³n de vistas y funciones - 2024-09-27 12:53:57
+ 2 files changed, 45 insertions(+), 2 deletions(-)
+2024-09-27 12:53:57 - Commit realizado con el mensaje: 'ActualizaciÃ³n de vistas y funciones - 2024-09-27 12:53:57'
+Enumerating objects: 7, done.
+Counting objects: 100% (7/7), done.
+Delta compression using up to 28 threads
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 703 bytes | 703.00 KiB/s, done.
+Total 4 (delta 2), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/UPCN-Nestor/reportes-sql.git
+   55cdcd8..30701f4  main -> main
+2024-09-27 12:53:59 - Cambios subidos al repositorio remoto.
+2024-09-27 12:53:59 - Proceso de exportaciÃ³n y Git finalizado.
+**********************
+Fin de la transcripción de Windows PowerShell
+Hora de finalización: 20240927125359
+**********************
